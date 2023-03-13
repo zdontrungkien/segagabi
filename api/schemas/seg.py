@@ -1,6 +1,7 @@
 from bson import ObjectId
 from bson.errors import InvalidId
 from pydantic import BaseModel, Field
+from typing import Optional
 
 
 class ObjectIdField(str):
@@ -19,6 +20,16 @@ class ObjectIdField(str):
 class Document(BaseModel):
     name: str = Field(...)
     desc: str = Field(...)
+
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+
+
+class UpdateDocument(BaseModel):
+    name: Optional[str]
+    desc: Optional[str]
 
     class Config:
         allow_population_by_field_name = True

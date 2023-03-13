@@ -38,6 +38,40 @@ async def create_document(document: dict, collection: str) -> dict:
         raise AlreadyExistsHTTPException(f"Document with {document.inserted_id=} already exists")
 
 
+async def update_document(document_id: str, data: dict, collection: str) -> bool:
+    """
+
+    :param document_id:
+    :param collection:
+    :return:
+    """
+    document_filter = {"_id": ObjectId(document_id)}
+    document = await api.app.state.mongo_collection[collection].find_one(document_filter)
+    if document:
+        document = api.app.state.mongo_collection[collection].update_one(
+            document_filter,
+            {"$set": data}
+        )
+        return True
+    else:
+        raise ValueError(f"No document found for {document_id=} in {collection=}")
+
+
+async def delete_document(document_id: str, collection: str) -> dict:
+    """
+
+    :param document_id:
+    :param collection:
+    :return:
+    """
+    document_filter = {"_id": ObjectId(document_id)}
+    if document := await api.app.state.mongo_collection[collection].find_one(document_filter):
+        await api.app.state.mongo_collection[collection].delete_one(document_filter)
+        return True
+    else:
+        raise ValueError(f"No document found for {document_id=} in {collection=}")
+
+
 async def get_mongo_meta() -> dict:
     list_databases = await api.app.state.mongo_client.list_database_names()
     list_of_collections = {}

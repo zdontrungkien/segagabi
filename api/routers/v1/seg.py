@@ -4,8 +4,8 @@ from starlette.status import HTTP_201_CREATED
 
 from api import config
 from api.routers.exceptions import NotFoundHTTPException
-from api.schemas.seg import Document, DocumentResponse, ObjectIdField
-from api.services.repository import create_document, retrieve_document
+from api.schemas.seg import Document, DocumentResponse, ObjectIdField, UpdateDocument
+from api.services.repository import create_document, retrieve_document, update_document, delete_document
 
 global_settings = config.get_settings()
 collection = global_settings.collection
@@ -48,5 +48,40 @@ async def get_document(object_id: ObjectIdField):
     except ValueError as exception:
         raise NotFoundHTTPException(msg=str(exception))
 
+
+@router.patch(
+    "/{object_id}",
+    # response_description="Document retrieved",
+    # response_model=DocumentResponse,
+)
+async def patch_document(object_id: ObjectIdField, data: UpdateDocument):
+    """
+
+    :param object_id:
+    :return:
+    """
+    try:
+        data = jsonable_encoder(data)
+        await update_document(object_id, data, collection)
+        return True
+    except ValueError as exception:
+        raise NotFoundHTTPException(msg=str(exception))
+
+
+@router.delete(
+    "/{object_id}",
+    # response_description="Document retrieved",
+    # response_model=DocumentResponse,
+)
+async def remove_document(object_id: ObjectIdField):
+    """
+
+    :param object_id:
+    :return:
+    """
+    try:
+        return await delete_document(object_id, collection)
+    except ValueError as exception:
+        raise NotFoundHTTPException(msg=str(exception))
 
 # TODO: PUT for replace aka set PATCH for update ?
