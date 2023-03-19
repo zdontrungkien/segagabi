@@ -36,4 +36,3 @@ COPY .env ./
 RUN addgroup --system --gid 1001 "scrapers-house"
 RUN adduser --system --uid 1001 "scrapers-house"
 USER "scrapers-house"
-
