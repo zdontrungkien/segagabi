@@ -26,8 +26,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
-    volumes:
-      - "/opt/mongo/data/db:/data/db"  # persistent mongo data
+    # volumes:
+    #   - "/opt/mongo/data/db:/data/db"  # persistent mongo data
     ports:
       - "27017:27017"
 
