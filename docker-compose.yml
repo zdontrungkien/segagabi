@@ -1,6 +1,36 @@
-version: '3'
-
+# master node
+version: '3.3'
 services:
+  master:
+    image: crawlabteam/crawlab
+    container_name: crawlab_master
+    restart: always
+    environment:
+      CRAWLAB_NODE_MASTER: "Y"  # Y: master node
+      CRAWLAB_MONGO_HOST: "mongo"  # mongo host address. In the docker compose network, directly refer to the service name
+      CRAWLAB_MONGO_PORT: "27017"  # mongo port 
+      CRAWLAB_MONGO_DB: "crawlab"  # mongo database 
+      CRAWLAB_MONGO_USERNAME: "root"  # mongo username
+      CRAWLAB_MONGO_PASSWORD: "example"  # mongo password 
+      CRAWLAB_MONGO_AUTHSOURCE: "admin"  # mongo auth source 
+    volumes:
+      - "/opt/crawlab/master:/data"  # persistent crawlab data
+    ports:
+      - "8080:8080"  # exposed api port
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    # volumes:
+    #   - "/opt/mongo/data/db:/data/db"  # persistent mongo data
+    ports:
+      - "27017:27017"
+
   web:
     build: .
     restart: always
@@ -12,39 +42,4 @@ services:
       - "8989:8989"
     depends_on:
       - mongo
-    command: uvicorn api.main:app --reload --host 0.0.0.0 --port 8989 
-
-  master:
-    image: crawlabteam/crawlab
-    container_name: crawlab_master
-    restart: always
-    environment:
-      CRAWLAB_NODE_MASTER: "Y"  # Y: master node
-      CRAWLAB_MONGO_HOST: "mongo"  # mongo host address. In the docker compose network, directly refer to the service name
-      CRAWLAB_MONGO_PORT: "27017"  # mongo port 
-      CRAWLAB_MONGO_DB: "crawlab"  # mongo database 
-      CRAWLAB_MONGO_USERNAME: "username"  # mongo username
-      CRAWLAB_MONGO_PASSWORD: "password"  # mongo password 
-      CRAWLAB_MONGO_AUTHSOURCE: "admin"  # mongo auth source 
-    volumes:
-      - "/opt/master:/data"  # persistent crawlab data
-    ports:
-      - "8080:8080"  # exposed api port
-    depends_on:
-      - mongo
-
-  mongo:
-    image: mongo:4.2
-    restart: always
-    env_file:
-      - .env
-    environment:
-      - MONGO_INITDB_DATABASE=${MONGO_DB}
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS}
-    volumes:
-      - "/opt/mongo/data/db:/data/db"  # persistent mongo data
-    ports:
-      - "27017:27017"  # expose mongo port to host machine
-    command:
-      mongod --quiet --logpath /dev/null
+    command: uvicorn api.main:app --reload --host 0.0.0.0 --port 8989
