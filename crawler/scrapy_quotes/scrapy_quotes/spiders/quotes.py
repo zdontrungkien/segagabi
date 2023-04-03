@@ -13,5 +13,5 @@ class QuotesSpider(scrapy.Spider):
                 "desc": quote.css("span.text::text").extract_first()
             }
 
-            rsp = requests.post("http://0.0.0.0:8989/api/v1/seg",json=data)
+            rsp = requests.post("http://web:8989/api/v1/seg",json=data)
             return rsp.json()
