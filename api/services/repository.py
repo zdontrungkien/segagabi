@@ -73,9 +73,13 @@ async def delete_document(document_id: str, collection: str) -> dict:
 
 
 async def get_mongo_meta() -> dict:
+    print('----------0--------')
     list_databases = await api.app.state.mongo_client.list_database_names()
+    print('----------1--------')
     list_of_collections = {}
     for db in list_databases:
         list_of_collections[db] = await api.app.state.mongo_client[db].list_collection_names()
+    print('----------2--------')
     mongo_meta = await api.app.state.mongo_client.server_info()
+    print('----------3--------')
     return {"version": mongo_meta["version"], "databases": list_databases, "collections": list_of_collections}
