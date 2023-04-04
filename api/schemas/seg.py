@@ -18,8 +18,10 @@ class ObjectIdField(str):
 
 
 class Document(BaseModel):
-    name: str = Field(...)
-    desc: str = Field(...)
+    user: str = Field(...)
+    date: str = Field(...)
+    title: str = Field(...)
+    content: str = Field(...)
 
     class Config:
         allow_population_by_field_name = True
@@ -28,8 +30,10 @@ class Document(BaseModel):
 
 
 class UpdateDocument(BaseModel):
-    name: Optional[str]
-    desc: Optional[str]
+    user: Optional[str]
+    date: Optional[str]
+    title: Optional[str]
+    content: Optional[str]
 
     class Config:
         allow_population_by_field_name = True
